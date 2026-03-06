@@ -25,7 +25,6 @@ modules:
       - mkdir -p /app/home/Documents
       - mkdir -p /app/etc
       - cp -r * /app/
-      - install -Dm644 hosts /app/etc/hosts
       - rm /app/chrome-sandbox
       - chmod +x /app/CurseForge
 
@@ -43,11 +42,6 @@ modules:
             #!/bin/sh
             echo "CurseForge script starting"
 
-            # Append custom host blocks
-            if [ -f /app/etc/hosts ]; then
-              cat /app/etc/hosts >> /etc/hosts
-            fi
-
             mkdir -p "$HOME/Documents"
 
             mkdir -p "/var/data/CurseForge/minecraft"
@@ -60,4 +54,7 @@ modules:
               ln -s "/var/data/CurseForge/curseforge" "$HOME/Documents/curseforge"
             fi
 
-            exec /app/curseforge --no-sandbox "$@"
+            exec /app/curseforge \
+              --no-sandbox \
+              --host-resolver-rules="MAP mrkt.forgecdn.net 0.0.0.0,MAP ads.pubmatic.com 0.0.0.0,MAP overwolf-d.openx.net 0.0.0.0,MAP tracking.overwolf.com 0.0.0.0,MAP content.overwolf.com 0.0.0.0,MAP ep2.adtrafficquality.google 0.0.0.0,MAP ssbsync.smartadserver.com 0.0.0.0" \
+              "$@"
