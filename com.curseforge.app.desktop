@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=CurseForge
+Comment=Mod manager for Minecraft and other games
+Exec=flatpak run com.curseforge.app
+Icon=com.curseforge.app
+Terminal=false
+Categories=Game;Utility;
+StartupNotify=true

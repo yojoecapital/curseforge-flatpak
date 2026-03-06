@@ -1,21 +1,28 @@
 # curseforge-flatpak
 
-With flatpak-builder, dpkg-deb and wget present in the path:
+This is a fork of https://github.com/hurricane-src/curseforge-flatpak. I'm just tweaking it a bit so that there is 1 script to build and install the Flatpak. I am also blocking common Ad hosts from the sandbox.
 
-## Install the SDK, version 24.08
+## Prerequisites
 
-flatpak install flathub org.freedesktop.Sdk</br>
+The following must be present in the PATH.
+
+```
+flatpak-builder
+dpkg-deb
+wget
+```
+
+The following Flatpak dependencies must be installed (version 24.08):
+
+```
+flatpak install flathub org.freedesktop.Sdk
 flatpak install flathub org.freedesktop.Platform
+```
 
-## Download CurseForge and prepare it in the 'files' directory
-./download
+## Building and installing
 
-## Build the flatpak
-./build
+To build and install, run the following command. You can also run this to update the Flatpak.
 
-## Install the flatpak
-./install
-
-## Run the flatpak
-./run
-
+```
+./build-install.sh
+```

@@ -1,2 +1,0 @@
-#!/bin/sh
-flatpak-builder --force-clean build-dir com.curseforge.app.yaml

@@ -3,6 +3,7 @@ runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: /app/CurseForge
+
 finish-args:
   - --filesystem=xdg-config/CurseForge:create
   - --filesystem=xdg-data/CurseForge:create
@@ -19,31 +20,44 @@ finish-args:
 modules:
   - name: curseforge
     buildsystem: simple
+
     build-commands:
       - mkdir -p /app/home/Documents
+      - mkdir -p /app/etc
       - cp -r * /app/
+      - install -Dm644 hosts /app/etc/hosts
       - rm /app/chrome-sandbox
       - chmod +x /app/CurseForge
+
     sources:
       - type: dir
         path: files
+
+      - type: file
+        path: hosts
+
       - type: script
         dest-filename: CurseForge
         commands:
-        - |
-          #!/bin/sh
-          echo "CurseForge script starting"
-          mkdir -p "$HOME/Documents"
+          - |
+            #!/bin/sh
+            echo "CurseForge script starting"
 
-          mkdir -p "/var/data/CurseForge/minecraft"
-          if [ ! -e "$HOME/.minecraft" ]; then
-            ln -s "/var/data/CurseForge/minecraft" "$HOME/.minecraft"
-          fi
+            # Append custom host blocks
+            if [ -f /app/etc/hosts ]; then
+              cat /app/etc/hosts >> /etc/hosts
+            fi
 
-          mkdir -p "/var/data/CurseForge/curseforge"
-          if [ ! -e "$HOME/Documents/curseforge" ]; then
-            ln -s "/var/data/CurseForge/curseforge" "$HOME/Documents/curseforge"
-          fi
+            mkdir -p "$HOME/Documents"
 
-          exec /app/curseforge --no-sandbox "$@"
+            mkdir -p "/var/data/CurseForge/minecraft"
+            if [ ! -e "$HOME/.minecraft" ]; then
+              ln -s "/var/data/CurseForge/minecraft" "$HOME/.minecraft"
+            fi
 
+            mkdir -p "/var/data/CurseForge/curseforge"
+            if [ ! -e "$HOME/Documents/curseforge" ]; then
+              ln -s "/var/data/CurseForge/curseforge" "$HOME/Documents/curseforge"
+            fi
+
+            exec /app/curseforge --no-sandbox "$@"

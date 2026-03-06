@@ -1,34 +1,30 @@
 #!/bin/sh
 
+set -e
+
+echo "STEP 1: Cleaning files..."
+
+rm -rf files .flatpak-builder
+rm -f *.deb
+
+echo "STEP 2: Downloading files..."
+
 DEB=curseforge-latest-linux.deb
 URI="https://curseforge.overwolf.com/downloads/$DEB"
 
-doe()
-{
-  if [ $? -ne 0 ]; then
-    echo "ERROR: '$@'"
-    exit 1
-  fi
-}
+command -v dpkg-deb >/dev/null || { echo "ERROR: dpkg-deb not found"; exit 1; }
+command -v wget >/dev/null || { echo "ERROR: wget not found"; exit 1; }
 
 if [ ! -d files ]; then
-  if [ ! -f $DEB ]; then
-    which dpkg-deb
-    doe "dpkg-deb not found in path"
-
-    which wget
-    doe "wget not found in path"
-
-    wget "$URI"
-    doe "downloading $URI failed"
+  if [ ! -f "$DEB" ]; then
+    wget -c "$URI"
   fi
 
   dpkg-deb -x "$DEB" files
-  doe "unpacking $DEB failed"
 fi
 
 if [ -d files/opt/CurseForge ]; then
-  mv files/opt/CurseForge/* files
+  mv files/opt/CurseForge/* files/ 2>/dev/null
   rm -rf files/opt
   rm -rf files/usr
 fi
@@ -41,3 +37,5 @@ else
   echo "If you've already tried that delete the $DEB file too"
 fi
 
+echo "STEP 3: Building and installing..."
+flatpak-builder --user --install --force-clean build-dir com.curseforge.app.yaml
